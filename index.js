@@ -22,20 +22,64 @@ class Renderer{
         this.box = box;
     }
 
-
-    render(){
-        if (this.l == true){
-            this.box.style.top = "40px";   
-            this.l = false;
-        } else {
-            this.box.style.top = "20px";
-            this.l = true;
-        }
+    render(position){
+        this.box.style.top = position + "px";
     }
 }
 
-let renderer = new Renderer(document.getElementById("game"));
+class Box{
+    constructor(){
+        this.position = 0;
+        this.speed = 0;
+    }
 
-setInterval(() => {
-    renderer.render();
-}, 17);
+    update(){
+        this.speed+= 0.35;
+        this.position += this.speed;
+    }
+
+    moveUp(){
+        this.speed -= 20;
+    }
+}
+
+class Game{
+    constructor(element){
+        this.renderer = new Renderer(element);
+        this.box = new Box();
+        this.element = element;
+        this.isRunning = true;
+        this.init();
+    }
+
+    init(){
+        this.element.addEventListener("click", () => {
+            this.box.moveUp();
+        }, false);
+    }
+
+    start(){
+        let counter = 0;
+        let timer = setInterval(() => {
+            counter++;
+            if (this.isRunning){
+                this.box.update();
+            }
+            if (this.box.position < 0){
+                this.isRunning = false; 
+                clearInterval(timer);   
+                alert("Game Over: " + counter + " Punkte erreicht");
+            } 
+            if (this.box.position > 580){
+                this.isRunning = false;
+                clearInterval(timer);
+                alert("Game Over: " + counter + " Punkte erreicht");
+            }
+            this.renderer.render(this.box.position);
+        }, 17);
+        console.log(timer);
+    }
+}
+
+let game = new Game(document.getElementById("game"));
+game.start();
